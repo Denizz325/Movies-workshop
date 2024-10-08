@@ -29,8 +29,8 @@ router.get('/search', async (req, res) => {
 router.get('/:movieId/details', async (req, res) => {
     const movieId = req.params.movieId;
     const movie = await movieService.getOne(movieId).lean();
-    const isOwner = req.user?._id == movie.owner
-
+    const isOwner = movie.owner && movie.owner.toString() === req.user?._id;
+    console.log(isOwner)
     res.render('movies/details', { movie, isOwner });
 });
 

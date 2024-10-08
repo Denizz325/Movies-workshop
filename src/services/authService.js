@@ -1,5 +1,5 @@
 import User from '../models/User.js'
-import jwt from 'jsonwebtoken'
+import jwt from '../lib/jwt.js'
 import bcrypt from 'bcrypt'
 
 
@@ -24,7 +24,7 @@ const login = async (email, password) => {
         _id: user._id,
         email
     }
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {expiresIn:'2h'})
+    const token = await jwt.sign(payload, process.env.JWT_SECRET, {expiresIn:'2h'})
     return token
 }
 

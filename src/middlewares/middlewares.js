@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken'
+import jwt from '../lib/jwt.js'
 
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
     const token = req.cookies['auth'];
 
     if (!token) {
@@ -8,11 +8,18 @@ export const authMiddleware = (req, res, next) => {
     }
 
     try{
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = {
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+        const user = {
             _id: decoded._id,
             email: decoded.email
         }
+
+        req.user = user;
+        req.isAuthenticated = true
+        res.locals.userId = user._id;
+        res.locals.userEmail = user.email;
+        res.locals.isAuthenticated = true;
+
 
         return next();
 
@@ -21,4 +28,12 @@ export const authMiddleware = (req, res, next) => {
 
         res.redirect('/auth/login')
     }
+}
+
+export const isAuth = (req, res, next) => {
+    if (!req.isAuthenticated) {
+        return res.redirect('/auth/login');
+    }
+    
+    return next();
 }

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import  authService from "../services/authService.js";
-// import authService from '../services/authService.js'
+
 
 const router = Router();
 
@@ -8,11 +8,15 @@ router.get('/register', (req, res) => {
     res.render('auth/register');
 });
 
-router.post('/register', (req, res) => {
+router.post('/register', async(req, res) => {
     const {email, password, rePassword} = req.body
-    authService.register(email, password)
+    await authService.register(email, password)
+    const token = await authService.login(email, password)
+    res.cookie('auth', token, {httpOnly: true})
     
-    res.redirect('/auth/login')
+    res.redirect('/')
+    
+
 
 });
 
@@ -28,6 +32,11 @@ router.post('/login', async (req, res) => {
     
     res.redirect('/')
 
+});
+
+router.get('/logout', (req, res) => {
+    res.clearCookie('auth')
+    res.redirect('/')
 });
 
 
