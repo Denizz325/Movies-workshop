@@ -12,8 +12,9 @@ router.get('/create', (req, res) => {
 
 router.post('/create', async (req, res) => {
     const movieData = req.body;
+    const ownerId = req.user?._id
 
-    await movieService.create(movieData);
+    await movieService.create(movieData, ownerId);
 
     res.redirect('/');
 });
@@ -28,8 +29,9 @@ router.get('/search', async (req, res) => {
 router.get('/:movieId/details', async (req, res) => {
     const movieId = req.params.movieId;
     const movie = await movieService.getOne(movieId).lean();
+    const isOwner = req.user?._id == movie.owner
 
-    res.render('movies/details', { movie });
+    res.render('movies/details', { movie, isOwner });
 });
 
 router.get('/:movieId/attach', async (req, res) => {
@@ -49,9 +51,26 @@ router.post('/:movieId/attach', async (req, res) => {
     res.redirect(`/movies/${movieId}/details`);
 });
 
-// Deprecated
-function toArray(documents) {
-    return documents.map(document => document.toObject());
-}
+router.get('/:movieId/delete', async (req, res) => {
+    const movieId = req.params.movieId
+    await movieService.remove(movieId)
 
+    res.redirect('/');
+});
+
+router.get('/:movieId/edit', async (req, res) => {
+    const movieId = req.params.movieId;
+    const movie = await movieService.getOne(movieId).lean()
+    
+    res.render('movies/edit', {movie})
+});
+
+router.post('/:movieId/edit', async (req, res) => {
+    const data = req.body
+    const movieId = req.params.movieId;
+    
+    await movieService.update(movieId, data)
+    
+    res.redirect('/')
+});
 export default router;
