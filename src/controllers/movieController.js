@@ -13,8 +13,13 @@ router.get('/create', (req, res) => {
 router.post('/create', async (req, res) => {
     const movieData = req.body;
     const ownerId = req.user?._id
+    try {
 
-    await movieService.create(movieData, ownerId);
+        await movieService.create(movieData, ownerId);
+    } catch(err) {
+        console.log(err.message)
+        return res.end()
+    }
 
     res.redirect('/');
 });

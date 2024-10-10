@@ -10,7 +10,14 @@ router.get('/register', (req, res) => {
 
 router.post('/register', async(req, res) => {
     const {email, password, rePassword} = req.body
-    await authService.register(email, password)
+
+    try {
+
+        await authService.register(email, password, rePassword);
+    } catch(err) {
+        console.log(err.message);
+        return res.end();
+    }
     const token = await authService.login(email, password)
     res.cookie('auth', token, {httpOnly: true})
     
