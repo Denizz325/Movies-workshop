@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import movieService from "../services/movieService.js";
 import castService from "../services/castService.js";
+import { getErrorMessage } from "../utils/errorUtiles.js";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.post('/create', async (req, res) => {
 
         await movieService.create(movieData, ownerId);
     } catch(err) {
-        const errorMsg = Object.values(err.errors)[0]?.message
+        const errorMsg = getErrorMessage(err)
         return res.render('movies/create', {error: errorMsg, movie: movieData})
     }
 
