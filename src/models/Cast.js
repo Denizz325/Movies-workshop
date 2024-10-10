@@ -19,7 +19,7 @@ const castSchema = new Schema({
         type: String,
         validate: [/^https?:\/\//, 'Invalid image url!'],
     },
-});
+}); 
 
 const Cast = model('Cast', castSchema);
 
