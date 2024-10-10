@@ -58,8 +58,15 @@ router.post('/:movieId/attach', async (req, res) => {
 
 router.get('/:movieId/delete', async (req, res) => {
     const movieId = req.params.movieId
-    await movieService.remove(movieId)
 
+    const movie = await movieService.getOne(movieId).lean();
+    if (movie.owner?.toString() !== req.user._id) {
+        // return res.render('movies/details', { movie, isOwner: false, error: 'You cannot delete this movie!' });
+        res.setError('You cannot delete this movie!');
+        return res.redirect('/404');
+    }
+
+    await movieService.remove(movieId)
     res.redirect('/');
 });
 
